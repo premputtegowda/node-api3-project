@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-
+const Post = require('../posts/postDb.js')
 const User = require('./userDb.js')
 
 router.post('/', validateUser, (req, res) => {
@@ -12,8 +12,15 @@ router.post('/', validateUser, (req, res) => {
   
   })  ;
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post('/:id/posts',validateUserId,validatePost, (req, res) => {
+  console.log(req.body);
+  const post = {...req.body, user_id:req.user.id}
+  console
+  
+  console.log("before posting: ",post)
+  Post.insert(post)
+    .then(post => res.status(201).json(post))
+    .catch(err => res.status(400).json({error : "Sorry unable to create a post"}))
 });
 
 router.get('/', (req, res) => {
@@ -111,6 +118,16 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   // do your magic!
+  if (!Object.keys(req.body).length) {
+    res.status(400).json({message: 'missing post data'}) 
+    } else if (!req.body.text) {{}
+      console.log(!req.body.text)
+      res.status(400).json({message: 'text required'}) 
+    } else if(Object.keys(req.body).length > 1) {
+      res.status(400).json({message: 'Invalid data'})
+    } else {
+      next();
+    }
 }
 
 module.exports = router;
