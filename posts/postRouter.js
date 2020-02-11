@@ -2,8 +2,19 @@ const express = require('express');
 
 const router = express.Router();
 
+const Post = require('./postDb')
+
 router.get('/', (req, res) => {
-  // do your magic!
+  Post.get()
+    .then(posts => {
+     
+      res.status(500).json(posts)}
+      )
+    .catch(err => {
+      console.log(err)
+      res.status(401).json({error: "Couldn't retrieve posts"})
+      
+})
 });
 
 router.get('/:id', (req, res) => {
@@ -16,6 +27,9 @@ router.delete('/:id', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // do your magic!
+  const id = req.params.id;
+
+  
 });
 
 // custom middleware
